@@ -22,6 +22,7 @@
     sleep 10
   done
 
+  sleep 30
   
 # Then login using kubectl
 
@@ -35,8 +36,8 @@
   
 # now restart the pods, first calico-node then the rest of the world
 
-  kubectl get pods --namespace kube-system  | grep calico-node | awk '{print $1}' | while read line; do kubectl delete $line --namespace kube-system ;done
+  kubectl get pods --namespace kube-system  | grep calico-node | awk '{print $1}' | while read line; do kubectl delete pod $line --namespace kube-system ;done
   sleep 10
-  kubectl get pods --namespace kube-system  | grep -v Running | awk '{print $1}' | while read line; do kubectl delete $line --namespace kube-system ;done
+  kubectl get pods --namespace kube-system  | grep -v Running | awk '{print $1}' | while read line; do kubectl delete pod $line --namespace kube-system ;done
   
 exit 0
