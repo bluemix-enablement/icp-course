@@ -1,8 +1,16 @@
 #!/bin/bash
 
 # Then login using kubectl
-
-  token=`curl -k  -d '{"uid":"admin","password":"admin"}' http://master:8101/acs/api/v1/auth/login | grep -Po '(?<="token":)(.*?)(?=})' | sed 's/\(^"\|"$\)//g'`
+  token=""
+  while [ "$token" = "" ]
+  do
+    token=`curl -k -s -d '{"uid":"admin","password":"admin"}' http://master:8101/acs/api/v1/auth/login | grep -Po '(?<="token":)(.*?)(?=})' | sed 's/\(^"\|"$\)//g'`
+     if [ "$token" = "" ]
+     then
+       printf "."
+       sleep 5
+     fi
+  done
 
   kubectl config set-cluster cfc --server=https://master:8001 --insecure-skip-tls-verify=true
   kubectl config set-credentials user --token=$token

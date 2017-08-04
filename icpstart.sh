@@ -41,6 +41,5 @@ sleep 20
   ./icplogin.sh
   kubectl get pods --namespace kube-system  | grep -v Running | awk '{print $1}' | while read line; do kubectl delete pod $line --namespace kube-system ; done
 
-  cls
   kubectl get pods --namespace kube-system
 exit 0
