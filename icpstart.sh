@@ -25,19 +25,22 @@
   sleep 30
   
 # Then login using kubectl
-
-  token=`curl -k  -d '{"uid":"admin","password":"admin"}' http://master:8101/acs/api/v1/auth/login | grep -Po '(?<="token":)(.*?)(?=})' | sed 's/\(^"\|"$\)//g'`
-
-  kubectl config set-cluster cfc --server=https://master:8001 --insecure-skip-tls-verify=true
-  kubectl config set-credentials user --token=$token
-  kubectl config set-context cfc --cluster=cfc
-  kubectl config set-context cfc --user=user --namespace=default
-  kubectl config use-context cfc
-  
+  ./icplogin.sh
+sleep 20  
 # now restart the pods, first calico-node then the rest of the world
 
   kubectl get pods --namespace kube-system  | grep calico-node | awk '{print $1}' | while read line; do kubectl delete pod $line --namespace kube-system ;done
-  sleep 10
-  kubectl get pods --namespace kube-system  | grep -v Running | awk '{print $1}' | while read line; do kubectl delete pod $line --namespace kube-system ;done
+  sleep 30
+  kubectl get pods --namespace kube-system  | grep -v Running | awk '{print $1}' | while read line; do kubectl delete pod $line --namespace kube-system ; done
+
+  sleep 30
+
+  ssh root@master -C "ssh proxy -C \"service docker restart\";ssh worker1 -C \"service docker restart\";ssh worker2 -C \"service docker restart\";service docker restart"
   
+  sleep 30
+  ./icplogin.sh
+  kubectl get pods --namespace kube-system  | grep -v Running | awk '{print $1}' | while read line; do kubectl delete pod $line --namespace kube-system ; done
+
+  cls
+  kubectl get pods --namespace kube-system
 exit 0
