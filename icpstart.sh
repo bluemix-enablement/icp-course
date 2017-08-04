@@ -31,7 +31,7 @@ sleep 20
 
   kubectl get pods --namespace kube-system  | grep calico-node | awk '{print $1}' | while read line; do kubectl delete pod $line --namespace kube-system ;done
   sleep 30
-  kubectl get pods --namespace kube-system  | grep -v Running | awk '{print $1}' | while read line; do kubectl delete pod $line --namespace kube-system ; done
+  kubectl get pods --namespace kube-system  | grep -v Running | awk '{print $1}' | grep -v "NAME" | while read line; do kubectl delete pod $line --namespace kube-system ; done
 
   sleep 30
 
@@ -39,7 +39,8 @@ sleep 20
   
   sleep 30
   ./icplogin.sh
-  kubectl get pods --namespace kube-system  | grep -v Running | awk '{print $1}' | while read line; do kubectl delete pod $line --namespace kube-system ; done
+  sleep 30
+  kubectl get pods --namespace kube-system  | grep -v Running | awk '{print $1}' | grep -v "NAME" | while read line; do kubectl delete pod $line --namespace kube-system ; done
 
   kubectl get pods --namespace kube-system
 exit 0
