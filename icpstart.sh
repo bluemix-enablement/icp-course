@@ -21,25 +21,27 @@
     echo "waiting for worker2"
     sleep 10
   done
-
-  sleep 30
+  echo "All nodes are running - logging in using kubectl"
   
 # Then login using kubectl
   ./icplogin.sh
-sleep 20  
+sleep 40  
 # now restart the pods, first calico-node then the rest of the world
-
+  echo "Removing calico-node pods"
   kubectl get pods --namespace kube-system  | grep calico-node | awk '{print $1}' | while read line; do kubectl delete pod $line --namespace kube-system ;done
   sleep 30
+  echo "Removing stale pods"
   kubectl get pods --namespace kube-system  | grep -v Running | awk '{print $1}' | grep -v "NAME" | while read line; do kubectl delete pod $line --namespace kube-system ; done
 
-  sleep 30
-
+  echo "Waiting for processes to settle"
+  sleep 60
+  echo "Restarting docker"
   ssh root@master -C "ssh proxy -C \"service docker restart\";ssh worker1 -C \"service docker restart\";ssh worker2 -C \"service docker restart\";service docker restart"
-  
+  echo "Waiting for containers to be re-initialized"  
   sleep 30
+  echo "Logging back in using kubectl"
   ./icplogin.sh
-  sleep 30
+  sleep 60
   kubectl get pods --namespace kube-system  | grep -v Running | awk '{print $1}' | grep -v "NAME" | while read line; do kubectl delete pod $line --namespace kube-system ; done
 
   kubectl get pods --namespace kube-system
