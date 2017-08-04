@@ -34,7 +34,7 @@ sleep 40
   kubectl get pods --namespace kube-system  | grep -v Running | awk '{print $1}' | grep -v "NAME" | while read line; do kubectl delete pod $line --namespace kube-system ; done
 
   echo "Waiting for processes to settle"
-  sleep 60
+  sleep 90
   echo "Restarting docker"
   ssh root@master -C "ssh proxy -C \"service docker restart\";ssh worker1 -C \"service docker restart\";ssh worker2 -C \"service docker restart\";service docker restart"
   echo "Waiting for containers to be re-initialized"  
